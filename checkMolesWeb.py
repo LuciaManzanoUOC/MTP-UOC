@@ -5,18 +5,20 @@ import streamlit as st
 import tensorflow as tf
 import cv2
 from PIL import Image, ImageOps
+from keras import models  
+from tensorflow.keras.preprocessing import image
+from tensorflow.keras.applications.resnet import preprocess_input
 
 def import_and_predict(image_data, model):
     
         size = (224,224)    
-        image = ImageOps.fit(image_data, size, Image.ANTIALIAS)
-        image = image.convert('RGB')
-        image = np.asarray(image)
-        image = (image.astype(np.float32) / 255.0)
+        image_data = ImageOps.fit(image_data, size, Image.ANTIALIAS)
+        image_data = np.asarray(image_data)
 
-        img_reshape = image[np.newaxis,...]
+        img_batch = np.expand_dims(image_data, axis=0)
+        img_preprocessed = preprocess_input(img_batch)
 
-        prediction = model.predict(img_reshape)
+        prediction = model.predict(img_preprocessed)
         
         return prediction
 
@@ -41,15 +43,13 @@ st.image(image_photo, use_column_width=True)
 phototype_input = st.selectbox("Select phototype: ",
                      ['Unknown', 'I', 'II', 'III', 'IV', 'V', 'VI'])
 
-file = st.file_uploader("Please upload an image of a mole. For better results, please take a picture as close to the mole as possible with high quality.", type=["jpg", "jpeg"])
+file = st.file_uploader("Please upload an image of a mole. For better results, take a picture as close to the mole as possible with high quality.", type=["jpg", "jpeg"])
 #
 if file is None:
     st.write("You haven't uploaded an image file yet.")
 else:
     image = Image.open(file)
     st.image(image, use_column_width=True)
-    #image = cv2.resize(image,(224,224))     # resize image to match model's expected sizing
-    #image = image.reshape(1,224,224,3)
 
     if phototype_input == 'I' or phototype_input == 'II' or phototype_input == 'III':
         model = tf.keras.models.load_model('specific_model_I_II_III.h5')
