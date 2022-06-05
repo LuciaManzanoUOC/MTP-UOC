@@ -54,7 +54,6 @@ else:
     if phototype_input == 'I' or phototype_input == 'II' or phototype_input == 'III':
         model = tf.keras.models.load_model('specific_model_I_II_III.h5')
     elif phototype_input == 'IV' or phototype_input == 'V' or phototype_input == 'VI':
-        st.write("Estimated diagnosis: MELANOMA.")
         model = tf.keras.models.load_model('specific_model_IV_V_VI.h5')
     else:
         model = model
